@@ -1,5 +1,6 @@
 # MESA
-Leveraging Deep Neural Survival Networks for Event Prediction and Feature Selection: The Multi-Ethnic Study of Atherosclerosis (MESA)
+Leveraging Deep Neural Survival Networks for Event Prediction and Feature Selection:
+The Multi-Ethnic Study of Atherosclerosis (MESA)
 
 Aims: The purpose of the study is to provide an evaluation of machine and deep learning models when applied to survival analysis and to define how combinations of features can shape the learning environment and, ultimately, inform clinical decision making.
 
