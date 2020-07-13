@@ -1,6 +1,6 @@
 Leveraging Deep Neural Survival Networks for Event Prediction and Feature Selection: The Multi-Ethnic Study of Atherosclerosis (MESA)
 
-R-code is adapted from the following sources/packages for the purpose of data analysis within the current study:
+R-code was adapted from the following sources/packages for the purpose of data analysis within the current study:
 
 
 https://cran.r-project.org/web/packages/corrplot/index.html
