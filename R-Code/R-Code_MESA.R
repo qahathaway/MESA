@@ -167,8 +167,9 @@ ggforest(fit.coxph, data = final)
 
 
 
-####NRI and IDI####
-library(PredictABEL)
+####Non-Categorical NRI####
+library(survival)
+library(nricens)
 
 ##Load Dataset##
 MESA <- data.frame(read.csv(
@@ -178,63 +179,19 @@ MESA <- data.frame(read.csv(
 library(mlr)
 imputed = impute(MESA, target = character(0), classes = list(numeric = imputeMedian(), integer = imputeMedian()))
 final <- as.data.frame(imputed$data)
+final$event=as.integer(final$event)
+final$duration=as.integer(final$duration)
 
 # detach mlr package because of 'plotCalibration' conflict
 detach("package:mlr", unload = TRUE)
 
-###Sample 1###
-# specify column number of outcome variable
-cOutcome <- 1
-# specify column numbers of non-genetic predictors
-cNonGenPred <- c(4:25)
-# specify column numbers of non-genetic predictors that are categorical
-cNonGenPredCat <- c(0)
-# specify column numbers of genetic predictors
-cGenPred <- c(0)
-# specify column numbers of genetic predictors that are categorical
-cGenPredCat <- c(0)
-# fit logistic regression model
-riskmodel1 <- fitLogRegModel(data=final, cOutcome=cOutcome,
-                             cNonGenPreds=cNonGenPred, cNonGenPredsCat=cNonGenPredCat,
-                             cGenPreds=cGenPred, cGenPredsCat=cGenPredCat)
-summary(riskmodel1)
+## predciting the event of 'death'
+time  = final$duration
+event = final$event
 
-###Sample 2###
-# specify column numbers of non-genetic predictors
-cNonGenPred <- c(3)
-# fit logistic regression model
-riskmodel2 <- fitLogRegModel(data=final, cOutcome=cOutcome,
-                             cNonGenPreds=cNonGenPred, cNonGenPredsCat=cNonGenPredCat,
-                             cGenPreds=cGenPred, cGenPredsCat=cGenPredCat)
-summary(riskmodel2)
+z.std <- as.matrix(final[1])
+z.new <- as.matrix(final[2])
 
-
-# obtain multivariate OR(95% CI) for all predictors of the fitted model
-ORmultivariate(riskModel=riskmodel1)
-ORmultivariate(riskModel=riskmodel2)
-
-# obtain predicted risks
-predRisk1 <- predRisk(riskmodel1)
-predRisk2 <- predRisk(riskmodel2)
-
-# specify cutoff values for risk categories
-cutoff <- c(0,.10,.20,.30,.40,.50,.60,.70,.80,.90,1)
-# compute reclassification measures
-reclassification(data=final, cOutcome=cOutcome,
-                 predrisk1=predRisk1, predrisk2=predRisk2, cutoff=cutoff)
-
-####IDI Survival####
-library(survIDINRI)
-final$duration=as.integer(final$duration)
-final=final[!is.na(apply(final,1,mean)),] ; dim(final)
-final=final[!is.nan(apply(final,1,mean)),] ; dim(final)
-final=final[!is.infinite(apply(final,1,mean)),] ; dim(final)
-covs0<-as.matrix(final[,c(-1:-3,-26:-40)])
-covs1<-as.matrix(final[,c(-1:-2, -4:-40)])
-#--- inference ---
-t0=6000
-x<-IDI.INF(final[,2:1], covs0, covs1, t0, npert=500)
-#--- results ---
-IDI.INF.OUT(x)
-#--- Graphical presentaion of the estimates###
-IDI.INF.GRAPH(x)
+#5475 days = 15 year cutoff
+nricens(time = time, event = event, z.std = z.std, z.new = z.new, t0 = 5475,  updown = "diff", cut = 0, point.method = "ipw",
+        niter = 50, msg = TRUE)
