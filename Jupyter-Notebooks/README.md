@@ -1,4 +1,4 @@
-Leveraging Deep Neural Survival Networks for Event Prediction and Feature Selection: The Multi-Ethnic Study of Atherosclerosis (MESA)
+Cardiovascular Risk Prediction Using Deep Neural Survival Networks: The Multi-Ethnic Study of Atherosclerosis (MESA)
 
 Python code was adapted from the following sources/packages for the purpose of data analysis within the current study:
 
